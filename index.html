@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+
+    <title>ALL the GIFs!~!~!~!</title>
+</head>
+<body>
+    <div id="buttonDiv"></div>
+
+    <div id="actionContainer" class="container">
+        <div class="row">
+            <div id="gifDiv" class="col-lg-9 text-light"></div>
+            <div id="inputDiv" class="col-lg-3">
+                    <form id="scaryForm">
+                        <label class="text-light" for="input"><h1>Add a scary movie!</h1></label>
+                        <input type="text" id="scaryInput">
+                        <br>
+                        <button id="addMovie" type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+            </div>
+        </div>
+
+
+
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+
+        //initial array of movies
+        var topics = ['Nightmare On Elm Street', 'Halloween', 'Friday The 13th', 'Texas Chainsaw Massacre', 'Scream', 'House Of Wax', 'It Follows', 'The Exorcist', 'Donald Trump', 'Psycho', 'It', 'The Hills Have Eyes'];
+
+        //function to make buttons
+        function makeButtons(){
+            $('#buttonDiv').empty();
+
+            for (var i = 0; i <topics.length; i++){
+                var button = $('<button>');
+                button.addClass('movie');
+                button.attr('data-name', topics[i]);
+                button.text(topics[i]);
+                $('#buttonDiv').append(button);
+            }
+        }
+        
+        makeButtons();
+        
+        $('#addMovie').on('click', function(event){
+            event.preventDefault();
+
+            var movie = $('#scaryInput').val().trim();
+            topics.push(movie);
+
+            makeButtons();
+            makeMovieButtonsClickable();
+        });
+        
+        function makeMovieButtonsClickable() {
+        $('.movie').on('click', function() {
+
+            var scary = $(this).attr('data-name');
+
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                scary + "&api_key=Vyj773DggBVv8ugvWyvaA2yDSQLWGOPh&limit=10";
+            
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+            .then(function(response) {
+                console.log(queryURL);
+                console.log(response);
+
+                var results= response.data;
+                for (var i=0; i<results.length; i++){
+                    var movieDiv = $('<div>');
+                    movieDiv.addClass('d-inline-block');
+                    var p = $('<p>').text("Rating: " + results[i].rating);
+
+                    var movieGif = $('<img>');
+                    movieGif.attr("data-state", "still"); 
+
+                    movieGif.attr("src", results[i].images.fixed_height_still.url);
+
+                    movieGif.attr("data-animate",results[i].images.fixed_height.url);
+
+                    movieGif.attr("data-still",results[i].images.fixed_height_still.url);
+
+                    movieGif.addClass("gif");
+                    
+                    movieDiv.append(movieGif);
+                    movieDiv.append(p);
+
+                    $('#gifDiv').prepend(movieDiv);
+                    changeGifState(movieGif);
+                }
+                
+            });
+            
+        });
+        }
+        function changeGifState(movieGif) {
+        $(movieGif).on('click', function() {
+            var state = $(this).attr('data-state');
+
+            if (state === 'still') {
+                $(this).attr('src', $(this).attr('data-animate'));
+                $(this).attr('data-state', 'animate');
+            } else {
+                $(this).attr('src', $(this).attr('data-still'));
+                $(this).attr('data-state', 'still');
+            }
+            console.log("old state: " + state);
+            var state = $(this).attr('data-state');
+            console.log("new state: " + state);
+        });  
+        }
+        
+        makeMovieButtonsClickable();
+        
+
+        </script>
+    </div>
+
+    
+</body>
+</html>

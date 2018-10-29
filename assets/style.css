@@ -1,0 +1,19 @@
+body {
+    background-image: url(background.jpg);
+    background-size: 100%;
+}
+.movie {
+    margin: 10px;
+}
+#buttonDiv{
+    margin-bottom: 100px;
+}
+#addMovie{
+    margin-top: 10px;
+}
+#gifDiv {
+    display: inline-block;
+}
+.gif{
+    margin: 10px;
+}
